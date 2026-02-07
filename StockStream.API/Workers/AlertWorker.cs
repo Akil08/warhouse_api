@@ -18,6 +18,20 @@ namespace StockStream.API.Workers;
 /// 4. Listens to RabbitMQ queue 24/7
 /// 5. Processes messages from CloudAMQP as they arrive
 /// 
+//  what it's means  that it runs on separate thread ?
+// It means that the AlertWorker operates on a different thread than the main thread that handles HTTP
+// requests. 
+//This allows the worker to run continuously in the background without blocking or slowing down the API's ability to
+// respond to incoming HTTP requests. 
+//The worker can listen for messages and process them independently while the API remains responsive to users.
+/// does that means that it uses a thread non stop ? 
+/// Yes, the AlertWorker runs on a separate thread that is active as long as the application is running.
+/// so single thread language like node js can not run background worker ?
+/// Node.js is single-threaded but can still run background tasks using its event loop and asynchronous programming model.
+/// how come thats possible ?
+/// Node.js uses an event-driven, non-blocking I/O model. 
+/// It can handle background tasks by offloading them to the system's thread pool or using asynchronous callbacks, promises, or async/await.
+/// This allows Node.js to perform background work without blocking the main thread, even though it is
 /// MESSAGE FLOW:
 /// Service publishes message → CloudAMQP queue stores it → Worker receives it → Worker processes it
 /// 
@@ -37,6 +51,10 @@ public class AlertWorker : BackgroundService
 {
     private readonly IConnection _connection;
     private readonly IModel _channel;
+
+    // what is _connection and _channel ?
+    // _connection is the connection to the RabbitMQ server (CloudAMQP)
+    // _channel is the communication channel used to send and receive messages from RabbitMQ
     private readonly ILogger<AlertWorker> _logger;
 
     public AlertWorker(IConfiguration configuration, ILogger<AlertWorker> logger)
@@ -122,6 +140,12 @@ public class AlertWorker : BackgroundService
                 // ⭐ STEP 3: DESERIALIZE JSON TO C# OBJECT
                 // Parse JSON string into LowStockAlert object
                 // If JSON format doesn't match, this throws exception
+                // so we have json and we need to convert it to c# obj
+                // so we createed a class in same file and pass the json to that class to convert it to c# obj , right ?
+                // yes, the LowStockAlert class defines the structure of the message we expect to receive
+                // and JsonSerializer.Deserialize converts the JSON string into an instance of LowStockAlert
+                // so if class only used in this file , but not in other files, right ?
+                // Yes, the LowStockAlert class is only used within this AlertWorker file to represent the structure of the messages received from RabbitMQ. It is not used in other parts of the application.
                 var alert = JsonSerializer.Deserialize<LowStockAlert>(messageJson);
 
                 if (alert == null)
@@ -241,6 +265,10 @@ public class AlertWorker : BackgroundService
 /// Must match the JSON structure from RabbitMQService exactly
 /// Properties are automatically populated by JsonSerializer.Deserialize
 /// </summary>
+/// 
+/// 
+/// where we used this class ?
+/// 
 public class LowStockAlert
 {
     public int ProductId { get; set; }          // Which product is low

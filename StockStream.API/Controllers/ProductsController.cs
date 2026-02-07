@@ -38,6 +38,7 @@ public class ProductsController : ControllerBase
             _logger.LogInformation($"GET /api/products/{category}");
 
             // Call service - Redis caching happens inside
+            // i have a question , does this getproductsbycategoryasync method is in wrehouse service or in redis service ?
             var products = await _warehouseService.GetProductsByCategoryAsync(category);
 
             return Ok(products);

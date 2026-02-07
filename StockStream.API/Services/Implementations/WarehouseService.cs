@@ -114,8 +114,31 @@ public class WarehouseService : IWarehouseService
     /// - No other transaction can modify this product until lock released
     /// - Other products can be modified freely
     /// </summary>
+    
+    // so this return purchase result is a class that i have
+    // but its in interface file
+    // my ques is , how do this class is accessible in this file ?
+    // i mean , i have a class called purchase result in interface file , but i can use it in this file without importing the namespace of interface file
+    // because both the interface and implementation are in the same namespace (StockStream.API.Services), 
+    // they can access each other's types without needing an explicit using statement. 
+    // The C# compiler recognizes that they are part of the same namespace and allows them to reference each other directly. 
+
     public async Task<PurchaseResult> ProcessPurchaseAsync(int productId, int quantity)
     {
+     
+        // does this method save the data into redis ? 
+        // No, this method does not save data into Redis.
+        //why not ? does not this mehtod change product stock quantity ?
+        //  This method updates the stock quantity in the PostgreSQL database.
+        // so when do i need to update the data in redis ?
+        // You would update the Redis cache after successfully processing the purchase and updating the database.
+        // This is because the cache needs to reflect the latest stock quantity after the purchase.
+        // In this method, after the transaction commits and the stock quantity is updated in the database,
+        // you would call _redisService.DeleteAsync(cacheKey) to invalidate the cache for that product category.
+        // This way, the next time someone requests products by category, it will be a cache
+        // but there is no delete m]]]mehtod here , right ?
+        // The DeleteAsync method is part of the IRedisService interface, but it is not called directly in this ProcessPurchaseAsync method.
+
         // Validate input
         if (quantity <= 0)
         {
@@ -169,6 +192,20 @@ public class WarehouseService : IWarehouseService
             // This makes all changes permanent and releases the lock
             // Other transactions waiting for this product can now proceed
             await transaction.CommitAsync();
+
+            // should not we have to delete cache here ?
+            // but there is no code to delete cache here , right ?
+            // 
+
+                        // ⭐ STEP 4: COMMIT TRANSACTION
+            await transaction.CommitAsync();
+            
+            // ⭐ INVALIDATE CACHE - Delete cached products for this category
+            string cacheKey = $"products:{product.Category.ToLower()}";
+            await _redisService.DeleteAsync(cacheKey);
+            Console.WriteLine($"[Cache] Invalidated cache for category: {product.Category}");
+            
+            Console.WriteLine($"[Transaction] Committed successfully. New stock: {product.StockQuantity}");
 
             Console.WriteLine($"[Transaction] Committed successfully. New stock: {product.StockQuantity}");
 

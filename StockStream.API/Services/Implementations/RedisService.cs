@@ -12,10 +12,35 @@ public class RedisService : IRedisService
 {
     private readonly IDatabase _db;
 
+    // IS _db is for database or what ? 
+    // _db is the Redis database instance obtained from the IConnectionMultiplexer.
+    // is simple term what is _db? 
+    // _db is the main interface for performing Redis operations like GET, SET, DELETE.
+
     public RedisService(IConnectionMultiplexer redis)
     {
         // Get the Redis database from cloud connection
         // IConnectionMultiplexer is already connected to Redis Labs in Program.cs
+        // i don't see it on program.cs file , where is it ?
+        // In Program.cs, we have the following code that sets up the Redis connection and registers it as a singleton service:
+        /*
+          try
+{
+    var redisConnection = builder.Configuration.GetConnectionString("Redis")
+        ?? throw new InvalidOperationException("Redis connection string 'Redis' not found");
+
+    var redis = ConnectionMultiplexer.Connect(redisConnection);
+    builder.Services.AddSingleton<IConnectionMultiplexer>(redis);
+    Console.WriteLine("[Startup] ✓ Redis connected successfully");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"[Startup] ⚠️  Redis connection warning: {ex.Message}");
+    Console.WriteLine("[Startup] The application will start but caching will be unavailable");
+}
+        */
+        // above ones ? 
+        // yes, that code establishes the connection to Redis Labs and registers the IConnectionMultiplexer in the dependency injection container.
         _db = redis.GetDatabase();
     }
 
