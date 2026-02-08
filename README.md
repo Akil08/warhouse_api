@@ -23,7 +23,6 @@ It solves common warehouse management challenges such as:
 - Database transactions with row-level locking prevent overselling
 - Redis caching (5-minute TTL) delivers sub-100ms responses with fallback to database
 - RabbitMQ decouples alerting: purchase endpoint publishes messages instantly, background worker processes them independently
-- Cloud-native design using free-tier services (ElephantSQL, Redis Labs, CloudAMQP)
 
 ## Technologies Used
 
