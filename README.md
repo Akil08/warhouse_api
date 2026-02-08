@@ -81,24 +81,3 @@ Processes a product purchase with transactional stock deduction.
 }
 ```
 
-## Cloud Services
-
-### 1. PostgreSQL (ElephantSQL)
-
-- Free tier: 20MB
-- Connection string format: `Server=xxx.elephantsql.com;Port=5432;Database=xxx;User Id=xxx;Password=xxx;`
-- SSL mode: `Require` (sometimes needed)
-
-### 2. Redis (Redis Labs)
-
-- Free tier: 30MB
-- Connection string format: `YOUR_HOST:YOUR_PORT,password=YOUR_PASSWORD,ssl=False,abortConnect=False`
-- Example: `default:6379,password=abc123xyz,ssl=False,abortConnect=False`
-
-### 3. RabbitMQ (CloudAMQP)
-
-- Free tier: 1M messages/month
-- Connection string format: `amqps://username:password@host/vhost`
-- Example: `amqps://user123:pass456@chimpanzee.rmq.cloudamqp.com/vhost789`
-
-
