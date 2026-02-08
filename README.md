@@ -4,7 +4,6 @@
 A production-ready .NET 8 Web API for warehouse inventory management, supporting product retrieval by category and transactional purchases with low-stock alerting via a message queue.
 
 ## What It Does
-
 - Retrieves products by category with Redis caching for fast responses
 - Processes purchases with database transactions to ensure stock accuracy
 - Sends low-stock alerts to a RabbitMQ queue when stock falls ≤ 10
@@ -19,13 +18,12 @@ It solves common warehouse management challenges such as:
 - Tight coupling between purchase processing and alerting
 
 ## How It Solves It
-
 - Database transactions with row-level locking prevent overselling
 - Redis caching (5-minute TTL) delivers sub-100ms responses with fallback to database
 - RabbitMQ decouples alerting: purchase endpoint publishes messages instantly, background worker processes them independently
+- Cloud-native design using free-tier services (ElephantSQL, Redis Labs, CloudAMQP)
 
 ## Technologies Used
-
 - .NET 8 ASP.NET Core Web API
 - PostgreSQL (via Entity Framework Core + Npgsql) – main database
 - Redis (StackExchange.Redis) – caching
