@@ -3,9 +3,11 @@
 ## ⚠️ Important Note
 
 These projects are entirely original. They are not inspired by any YouTube tutorials, blogs, or copied from anywhere. I conceived the ideas myself, found the problems interesting and worth solving, and chose them specifically because I got so interested thinking how they can be solved also they challenged me in unique ways.
+
 This is one of my favorite projects out of the three I have built.
 My main goal here was not to create a production ready application, but to use it as a personal playground to deeply understand how different technologies connect and work together in practice: how files are linked, how code flows from controllers to services to repositories, how functions call one another, and how real world problems like race conditions, abuse prevention, and background automation are solved.
 I focused on exploring clean project structure, applying OOP principles and basic SOLID concepts in a practical way, and seeing the trade offs of each decision. Every feature, from transactions to caching, rate limiting to scheduled jobs, was implemented to learn how it would work in real world scenarios, to test, break, experiment, and truly grasp the underlying mechanics.
+
 These projects are learning experiments: intentionally kept simple enough to understand fully, yet realistic enough to reflect actual backend challenges.
 
 ## What the Project Is
