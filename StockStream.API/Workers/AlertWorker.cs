@@ -268,7 +268,7 @@ public class AlertWorker : BackgroundService
 /// 
 /// 
 /// where we used this class ?
-/// 
+/// why ?
 public class LowStockAlert
 {
     public int ProductId { get; set; }          // Which product is low
