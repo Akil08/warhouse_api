@@ -15,6 +15,11 @@ public interface IWarehouseService
     /// <summary>
     /// Process purchase with transaction support
     /// </summary>
+    /// 
+    /// instead fo purchase result , can we do something like purchase dto ? 
+    /// 
+    /// yes, we can create a PurchaseResponseDto that includes success status, 
+    /// message, and new stock level.
     Task<PurchaseResult> ProcessPurchaseAsync(int productId, int quantity);
 }
 

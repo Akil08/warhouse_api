@@ -8,6 +8,7 @@ using StockStream.API.Workers;
 var builder = WebApplicationBuilder.CreateBuilder(args);
 
 // ⭐ LOGGING SETUP
+
 builder.Services.AddLogging(logging =>
 {
     logging.ClearProviders();
@@ -37,8 +38,17 @@ var postgresConnection = builder.Configuration.GetConnectionString("PostgreSQL")
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(postgresConnection));
 
+
+
 // ⭐ REDIS CONNECTION - REDIS LABS CLOUD
 // Singleton: Only one connection shared across application
+
+// why redis is singleton?
+// Because creating multiple connections to Redis can lead to
+// resource exhaustion and performance issues. 
+// A single, shared connection allows for efficient reuse 
+// and better performance when accessing the cache.
+
 try
 {
     var redisConnection = builder.Configuration.GetConnectionString("Redis")
@@ -55,8 +65,11 @@ catch (Exception ex)
 }
 
 // ⭐ SERVICE REGISTRATION
-builder.Services.AddScoped<IRedisService, RedisService>();
-builder.Services.AddScoped<IRabbitMQService, RabbitMQService>();
+
+// both reids and que should be singleton , ok ! 
+
+builder.Services.AddSingleton<IRedisService, RedisService>();
+builder.Services.AddSingleton<IRabbitMQService, RabbitMQService>();
 builder.Services.AddScoped<IWarehouseService, WarehouseService>();
 
 // ⭐ BACKGROUND WORKER - RABBITMQ MESSAGE CONSUMER
@@ -77,6 +90,31 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // ⭐ APPLY MIGRATIONS ON STARTUP (Create database schema if not exists)
+
+// code first approach 
+
+
+// so if we forget to create the db , below code does it auto create ? 
+// Yes, the code uses Entity Framework Core's migration system to automatically
+// apply any pending migrations to the database when the application starts. 
+//If the database does not exist, it will be created based on the migrations 
+//defined in your project. This ensures that the database schema is up-to-date 
+//with your application's data model without requiring manual intervention.
+
+
+// does that means with the migratin code , we can just create db 
+// and never manually create tables or schema ?
+// Yes, with Entity Framework Core's migration system, you can define your data model
+// using C# classes (known as entities) and then create migrations that represent changes
+
+// u r taling about changes but i am talking full db creation with tables and schema !
+// Yes, the migration system can handle both the initial creation of the database and 
+//its schema, as well as any subsequent changes. When you create an initial migration 
+//(e.g., "InitialCreate"), it will generate the necessary SQL to create the database, 
+//tables, and schema based on your defined data model. When you run the application, 
+//it will apply this migration, effectively creating the entire database structure 
+//without any manual SQL scripting needed.
+
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -113,18 +151,19 @@ app.UseAuthorization();
 // Map controllers
 app.MapControllers();
 
-// ⭐ STARTUP LOG
-Console.WriteLine("\n╔════════════════════════════════════════╗");
-Console.WriteLine("║    StockStream Warehouse API Started   ║");
-Console.WriteLine("╚════════════════════════════════════════╝");
-Console.WriteLine($"Environment: {app.Environment.EnvironmentName}");
-Console.WriteLine($"Time: {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss UTC}");
-Console.WriteLine("\n📊 ENDPOINTS:");
-Console.WriteLine("  GET  /api/products/{category}  - Get products by category (Redis cached)");
-Console.WriteLine("  POST /api/products/buy         - Purchase product (transactional)");
-Console.WriteLine("\n🔧 BACKGROUND SERVICES:");
-Console.WriteLine("  ✓ AlertWorker - Listening to CloudAMQP queue for low-stock alerts");
-Console.WriteLine("\n📍 API Documentation: /swagger/ui");
-Console.WriteLine("════════════════════════════════════════\n");
 
 await app.RunAsync();
+
+
+
+// Model → What is the data?
+
+// Data → Where is it stored?
+
+// DTO → How is it formatted for the user?
+
+// Service → What are the rules?
+
+// Controller → How do we trigger the rules?
+
+// Worker → What happens automatically in the background?

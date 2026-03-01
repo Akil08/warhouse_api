@@ -29,8 +29,6 @@ public class ProductsController : ControllerBase
     /// 4. Return JSON list
     /// </summary>
     [HttpGet("{category}")]
-    [ProduceResponseType(typeof(List<ProductResponseDto>), StatusCodes.Status200OK)]
-    [ProduceResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetProductsByCategory(string category)
     {
         try
@@ -78,9 +76,6 @@ public class ProductsController : ControllerBase
     /// 8. Return result
     /// </summary>
     [HttpPost("buy")]
-    [ProduceResponseType(typeof(PurchaseResult), StatusCodes.Status200OK)]
-    [ProduceResponseType(typeof(PurchaseResult), StatusCodes.Status400BadRequest)]
-    [ProduceResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Buy([FromBody] BuyRequestDto request)
     {
         try

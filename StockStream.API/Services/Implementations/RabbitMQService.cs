@@ -61,6 +61,8 @@ public class RabbitMQService : IRabbitMQService
     private readonly IConnection _connection;
     private readonly IModel _channel;
 
+    
+
     public RabbitMQService(IConfiguration configuration)
     {
         // ⭐ STEP 1: GET CLOUDAMQP CONNECTION STRING FROM CONFIG

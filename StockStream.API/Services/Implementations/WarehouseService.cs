@@ -54,6 +54,7 @@ public class WarehouseService : IWarehouseService
         string cacheKey = $"products:{category.ToLower()}";
 
         // ⭐ CACHE HIT - Return immediately
+        // so is redis service receive a key but when segnin respose how to mkae sure
         var cachedProducts = await _redisService.GetAsync<List<ProductResponseDto>>(cacheKey);
         if (cachedProducts != null)
         {
@@ -77,6 +78,11 @@ public class WarehouseService : IWarehouseService
             .ToListAsync();
 
         // ⭐ STORE IN CACHE for 5 minutes
+  
+        //  public async Task SetAsync<T>(string key, T value, TimeSpan? expiration = null)
+        // does thsi T vaslue is product dto ?
+        // Yes, in this case, the T value is List<ProductResponseDto> 
+        // when we call SetAsync to cache the products by category.
         await _redisService.SetAsync(cacheKey, products, TimeSpan.FromMinutes(5));
 
         return products;
@@ -125,6 +131,9 @@ public class WarehouseService : IWarehouseService
 
     public async Task<PurchaseResult> ProcessPurchaseAsync(int productId, int quantity)
     {
+
+        //  we can take the id and quantity as dto 
+        // but which one is more efficient ? taking them as parameters or taking them as dto ?
      
         // does this method save the data into redis ? 
         // No, this method does not save data into Redis.
@@ -163,6 +172,11 @@ public class WarehouseService : IWarehouseService
             if (product == null)
             {
                 Console.WriteLine($"[Transaction] Product {productId} not found");
+
+                // why need rollbask here ? if product is not found then there is no change in database right ?
+                // Because we started a transaction, 
+                // even if no changes are made, we must explicitly rollback the transaction.
+                // This ensures that the database lock is released properly.
                 await transaction.RollbackAsync();
                 return PurchaseResult.FailureResult("Product not found");
             }

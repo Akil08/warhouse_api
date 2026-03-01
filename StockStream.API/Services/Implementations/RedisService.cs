@@ -17,30 +17,21 @@ public class RedisService : IRedisService
     // is simple term what is _db? 
     // _db is the main interface for performing Redis operations like GET, SET, DELETE.
 
+    // thsi _db is not postgresql database right ?
+    // No, _db is not a PostgreSQL database. It is a Redis database instance used for caching.
+    // so its for talking wioth the cloud redis db , right ? 
+    // Yes, _db is used to interact with the Redis database hosted on Redis Labs cloud.
+
+    // why we need serialization and deserialization for rdis ?
+    // Redis stores data as strings, so we need to serialize complex objects to 
+    // JSON strings when saving to Redis, and deserialize them back to objects when retrieving from Redis.
+    // This allows us to cache complex data structures in Redis while still being able to 
+    // work with them as C# objects in our application.
+    // so we can say that redis is a key value store and it stores data in string format , 
+    // so we need to serialize our objects to string format before storing them in redis 
+    // and deserialize them back to objects when retrieving from redis , right ?
     public RedisService(IConnectionMultiplexer redis)
     {
-        // Get the Redis database from cloud connection
-        // IConnectionMultiplexer is already connected to Redis Labs in Program.cs
-        // i don't see it on program.cs file , where is it ?
-        // In Program.cs, we have the following code that sets up the Redis connection and registers it as a singleton service:
-        /*
-          try
-{
-    var redisConnection = builder.Configuration.GetConnectionString("Redis")
-        ?? throw new InvalidOperationException("Redis connection string 'Redis' not found");
-
-    var redis = ConnectionMultiplexer.Connect(redisConnection);
-    builder.Services.AddSingleton<IConnectionMultiplexer>(redis);
-    Console.WriteLine("[Startup] ✓ Redis connected successfully");
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"[Startup] ⚠️  Redis connection warning: {ex.Message}");
-    Console.WriteLine("[Startup] The application will start but caching will be unavailable");
-}
-        */
-        // above ones ? 
-        // yes, that code establishes the connection to Redis Labs and registers the IConnectionMultiplexer in the dependency injection container.
         _db = redis.GetDatabase();
     }
 
@@ -51,7 +42,9 @@ catch (Exception ex)
     public async Task<T?> GetAsync<T>(string key)
     {
         try
-        {
+        {   
+            //stringgetasynce is provided by librry itsefkl ? 
+            // Yes, StringGetAsync is a method provided by the StackExchange.Redis library for retrieving values from Redis.
             var value = await _db.StringGetAsync(key);
             
             if (!value.HasValue)
@@ -73,6 +66,9 @@ catch (Exception ex)
     /// Set value in Redis cache with optional expiration
     /// Default expiration: 5 minutes
     /// </summary>
+    /// 
+    /// does this T valuse is product dto ?
+    /// 
     public async Task SetAsync<T>(string key, T value, TimeSpan? expiration = null)
     {
         try
