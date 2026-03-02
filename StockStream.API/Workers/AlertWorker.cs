@@ -245,6 +245,22 @@ public class AlertWorker : BackgroundService
     /// Called when application stops
     /// Ensures resources are properly released
     /// </summary>
+    /// 
+    /// does this for graceful shutdown ?
+    /// Yes, the StopAsync method is implemented to ensure a graceful shutdown of the AlertWorker. 
+    /// It closes the RabbitMQ channel and connection properly, 
+    /// allowing any ongoing message processing to complete before the application fully stops. 
+    /// This helps prevent resource leaks and ensures that the worker disconnects cleanly from CloudAMQP.
+    /// 
+    /// also if this worder is wiht main app, if the worker is down , does it affect the main app ?
+    /// If the AlertWorker encounters an error and stops, it will not affect 
+    /// the main API's ability to handle HTTP requests. 
+    /// The API will continue to function, but low stock alerts will not be processed until the worker is restarted.
+    /// However, if the worker is critical for your business operations, you should implement monitoring
+    ///  and alerting to ensure that you are notified if the worker goes down, so you can take action to restore it.
+    // so we can say that the worker is decoupled from the main app , right ?
+
+    
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("[AlertWorker] StopAsync called - Closing CloudAMQP connection");

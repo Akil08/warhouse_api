@@ -16,6 +16,17 @@ namespace StockStream.API.Services.Implementations;
 /// 
 /// KEY RESPONSIBILITY: Prevents race conditions (overselling) using transactions
 /// </summary>
+/// 
+/// 
+/// did we use row level lock ? row level is optimistic , right ? 
+/// In this implementation, we are using the default locking 
+/// behavior of PostgreSQL when we query the product row within a transaction. 
+/// This means that when we load the product row for update, 
+/// PostgreSQL will acquire a row
+// level lock on that specific product. 
+// This is a pessimistic locking approach, as it prevents other 
+//transactions from modifying the same product
+// until the current transaction is committed or rolled back.
 public class WarehouseService : IWarehouseService
 {
     private readonly AppDbContext _dbContext;
@@ -166,8 +177,22 @@ public class WarehouseService : IWarehouseService
             // ⭐ STEP 1: LOAD PRODUCT WITH IMPLICIT LOCK
             // After BEGIN TRANSACTION, this query acquires a lock on the product row
             // No other transaction can modify this product until we commit/rollback
+            
+            // is this lcok pessimistic or optimistic lock ?
+            //if yes , then why it does not have for update keyword ?
+            // This is a pessimistic lock because it prevents other 
+            // transactions from modifying the same product row
+            
+            // but does not this pessimic .FromSqlRaw("SELECT * FROM Products WHERE Id = {0} FOR UPDATE", productId)
+        
+            
+            // var product = await _dbContext.Products
+            //     ..FromSqlRaw("SELECT * FROM Products WHERE Id = {0} FOR UPDATE", productId)
+            //     .FirstOrDefaultAsync(p => p.Id == productId);
+
             var product = await _dbContext.Products
-                .FirstOrDefaultAsync(p => p.Id == productId);
+                .FromSqlRaw("SELECT * FROM Products WHERE Id = {0} FOR UPDATE", productId)
+                .FirstOrDefaultAsync();
 
             if (product == null)
             {

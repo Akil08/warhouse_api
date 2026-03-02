@@ -49,6 +49,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // A single, shared connection allows for efficient reuse 
 // and better performance when accessing the cache.
 
+// if redis is down , does it affect the whole application ?
+// If Redis is down, the application will still function, but caching will be unavailable.
+// The application will log a warning about the Redis connection failure, but it will continue to operate
+// without caching. 
+//This means that all requests will hit the PostgreSQL database directly,
+// which may lead to increased latency and load on the database, but the core 
+//functionality of the application will remain intact.
+
 try
 {
     var redisConnection = builder.Configuration.GetConnectionString("Redis")
