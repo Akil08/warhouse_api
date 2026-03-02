@@ -29,7 +29,7 @@ It solves common warehouse management challenges such as:
 
 ## How It Solves It
 - Database transactions with row-level locking prevent overselling
-- Redis caching (5-minute TTL) delivers sub-100ms responses with fallback to database
+- Redis caching (5-minute TTL) delivers responses with fallback to database
 - RabbitMQ decouples alerting: purchase endpoint publishes messages instantly, background worker processes them independently
 
 
