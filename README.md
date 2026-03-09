@@ -3,8 +3,7 @@
 ## ⚠️ Important Note
 
 
-
-This is a personal learning project — intentionally kept simple enough to understand fully, yet realistic enough to reflect actual backend challenges. My goal wasn't to build a production-ready application, but to use it as a playground to deeply understand how different technologies connect in practice: how code flows from controllers to services to repositories, how functions call one another, and how real-world problems like race conditions, abuse prevention, and background automation are solved.
+This is a personal learning project — intentionally kept simple enough to understand fully, yet realistic enough to reflect actual backend challenges. My goal wasn't to build a complete end to end production-ready application, but still mimick the real world production level deployable code and also to use it in a way to deeply understand how different technologies connect in practice: how code flows from controllers to services to repositories, how functions call one another, and how real-world problems like race conditions, abuse prevention, and background automation are solved.
 
 Every feature — from transactions to caching, rate limiting to scheduled jobs — was implemented to learn how it works in real-world scenarios: to test, break, experiment, and truly grasp the underlying mechanics. I focused on clean project structure, OOP principles, and basic SOLID concepts, and explored the trade-offs of each decision along the way.
 

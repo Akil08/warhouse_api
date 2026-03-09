@@ -39,24 +39,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(postgresConnection));
 
 
-
-// ⭐ REDIS CONNECTION - REDIS LABS CLOUD
-// Singleton: Only one connection shared across application
-
-// why redis is singleton?
-// Because creating multiple connections to Redis can lead to
-// resource exhaustion and performance issues. 
-// A single, shared connection allows for efficient reuse 
-// and better performance when accessing the cache.
-
-// if redis is down , does it affect the whole application ?
-// If Redis is down, the application will still function, but caching will be unavailable.
-// The application will log a warning about the Redis connection failure, but it will continue to operate
-// without caching. 
-//This means that all requests will hit the PostgreSQL database directly,
-// which may lead to increased latency and load on the database, but the core 
-//functionality of the application will remain intact.
-
 try
 {
     var redisConnection = builder.Configuration.GetConnectionString("Redis")
@@ -72,7 +54,6 @@ catch (Exception ex)
     Console.WriteLine("[Startup] The application will start but caching will be unavailable");
 }
 
-// ⭐ SERVICE REGISTRATION
 
 // both reids and que should be singleton , ok ! 
 
@@ -80,11 +61,9 @@ builder.Services.AddSingleton<IRedisService, RedisService>();
 builder.Services.AddSingleton<IRabbitMQService, RabbitMQService>();
 builder.Services.AddScoped<IWarehouseService, WarehouseService>();
 
-// ⭐ BACKGROUND WORKER - RABBITMQ MESSAGE CONSUMER
-// Runs continuously listening to CloudAMQP queue
 builder.Services.AddHostedService<AlertWorker>();
 
-// ⭐ CORS POLICY (Optional - allow cross-origin requests)
+//  CORS POLICY (Optional - allow cross-origin requests)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAny", policy =>
@@ -97,31 +76,8 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// ⭐ APPLY MIGRATIONS ON STARTUP (Create database schema if not exists)
+// APPLY MIGRATIONS ON STARTUP (Create database schema if not exists)
 
-// code first approach 
-
-
-// so if we forget to create the db , below code does it auto create ? 
-// Yes, the code uses Entity Framework Core's migration system to automatically
-// apply any pending migrations to the database when the application starts. 
-//If the database does not exist, it will be created based on the migrations 
-//defined in your project. This ensures that the database schema is up-to-date 
-//with your application's data model without requiring manual intervention.
-
-
-// does that means with the migratin code , we can just create db 
-// and never manually create tables or schema ?
-// Yes, with Entity Framework Core's migration system, you can define your data model
-// using C# classes (known as entities) and then create migrations that represent changes
-
-// u r taling about changes but i am talking full db creation with tables and schema !
-// Yes, the migration system can handle both the initial creation of the database and 
-//its schema, as well as any subsequent changes. When you create an initial migration 
-//(e.g., "InitialCreate"), it will generate the necessary SQL to create the database, 
-//tables, and schema based on your defined data model. When you run the application, 
-//it will apply this migration, effectively creating the entire database structure 
-//without any manual SQL scripting needed.
 
 using (var scope = app.Services.CreateScope())
 {
@@ -162,16 +118,3 @@ app.MapControllers();
 
 await app.RunAsync();
 
-
-
-// Model → What is the data?
-
-// Data → Where is it stored?
-
-// DTO → How is it formatted for the user?
-
-// Service → What are the rules?
-
-// Controller → How do we trigger the rules?
-
-// Worker → What happens automatically in the background?

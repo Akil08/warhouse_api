@@ -17,17 +17,7 @@ public class ProductsController : ControllerBase
         _logger = logger;
     }
 
-    /// <summary>
-    /// GET /api/products/{category}
-    /// 
-    /// Retrieve products by category with Redis caching
-    /// 
-    /// Logic flow:
-    /// 1. Check Redis cache for category
-    /// 2. If cache miss → Query PostgreSQL database
-    /// 3. Cache results for 5 minutes
-    /// 4. Return JSON list
-    /// </summary>
+    
     [HttpGet("{category}")]
     public async Task<IActionResult> GetProductsByCategory(string category)
     {
@@ -48,33 +38,6 @@ public class ProductsController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// POST /api/products/buy
-    /// 
-    /// Process purchase with transaction and low-stock alert
-    /// 
-    /// Request body:
-    /// {
-    ///   "productId": 1,
-    ///   "quantity": 3
-    /// }
-    /// 
-    /// Response on success:
-    /// {
-    ///   "success": true,
-    ///   "newStock": 47
-    /// }
-    /// 
-    /// Logic flow:
-    /// 1. Validate input (quantity > 0)
-    /// 2. Start database transaction
-    /// 3. Lock product row
-    /// 4. Check if stock >= quantity
-    /// 5. Update stock
-    /// 6. Commit transaction
-    /// 7. If stock ≤ 10 → Send RabbitMQ alert
-    /// 8. Return result
-    /// </summary>
     [HttpPost("buy")]
     public async Task<IActionResult> Buy([FromBody] BuyRequestDto request)
     {
