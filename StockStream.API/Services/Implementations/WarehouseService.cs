@@ -6,27 +6,7 @@ using StockStream.API.Services.Interfaces;
 
 namespace StockStream.API.Services.Implementations;
 
-/// <summary>
-/// ⭐ WAREHOUSE SERVICE - BUSINESS LOGIC LAYER
-/// 
-/// This service handles:
-/// 1. Product retrieval with Redis caching
-/// 2. Purchase processing with database transactions
-/// 3. Low-stock alert triggering
-/// 
-/// KEY RESPONSIBILITY: Prevents race conditions (overselling) using transactions
-/// </summary>
-/// 
-/// 
-/// did we use row level lock ? row level is optimistic , right ? 
-/// In this implementation, we are using the default locking 
-/// behavior of PostgreSQL when we query the product row within a transaction. 
-/// This means that when we load the product row for update, 
-/// PostgreSQL will acquire a row
-// level lock on that specific product. 
-// This is a pessimistic locking approach, as it prevents other 
-//transactions from modifying the same product
-// until the current transaction is committed or rolled back.
+
 public class WarehouseService : IWarehouseService
 {
     private readonly AppDbContext _dbContext;
